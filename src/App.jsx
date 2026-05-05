@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -6,11 +6,16 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+ 
+useEffect(() => {
+  setMovie("batman");
+  searchMovie("batman");
+}, []);
 
   const API_KEY = "4ef0393a";
 
-const searchMovie = async () => {
-  if (!movie.trim()) {
+  const searchMovie = async (searchTerm = movie) => {
+ if (!searchTerm.trim()) {
     setError("Please enter a movie name.");
     setData(null);
     return;
@@ -21,7 +26,7 @@ const searchMovie = async () => {
 
   try {
     const response = await fetch(
-      `https://www.omdbapi.com/?s=${movie}&apikey=${API_KEY}`
+    `https://www.omdbapi.com/?s=${searchTerm}&apikey=${API_KEY}` 
     );
 
     const result = await response.json();
@@ -59,6 +64,7 @@ const searchMovie = async () => {
 {error && <p className="error-message">{error}</p>}
 
 {data && data.Search && (
+
   <div className="movie-list">
     {data.Search.map((item) => (
       <div className="movie-card" key={item.imdbID}>

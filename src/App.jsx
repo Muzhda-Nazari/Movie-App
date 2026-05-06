@@ -6,8 +6,9 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
- 
-useEffect(() => {
+  const [selectedMovie, setSelectedMovie] = useState(null);
+
+  useEffect(() => {
   setMovie("batman");
   searchMovie("batman");
 }, []);
@@ -45,6 +46,15 @@ useEffect(() => {
   setLoading(false);
 };
 
+const fetchMovieDetails = async (id) => {
+  const response = await fetch(
+    `https://www.omdbapi.com/?i=${id}&apikey=${API_KEY}`
+  );
+
+  const result = await response.json();
+
+  setSelectedMovie(result);
+};
   return (
     <div className="search-box">
       <h1>Movie Finder 🎬</h1>
@@ -67,8 +77,12 @@ useEffect(() => {
 
   <div className="movie-list">
     {data.Search.map((item) => (
-      <div className="movie-card" key={item.imdbID}>
-        <h3>{item.Title}</h3>
+  <div
+  className="movie-card"
+  key={item.imdbID}
+  onClick={() => fetchMovieDetails(item.imdbID)}
+> 
+ <h3>{item.Title}</h3>
 <img
   src={item.Poster !== "N/A" ? item.Poster : "https://placehold.co/300x450?text=No+Poster"}
   alt={item.Title}
@@ -76,6 +90,53 @@ useEffect(() => {
         <p>{item.Year}</p>
       </div>
     ))}
+  {selectedMovie && (
+  <div className="movie-details">
+    <h2>{selectedMovie.Title}</h2>
+
+    <img
+      src={selectedMovie.Poster}
+      alt={selectedMovie.Title}
+    />
+
+    <p><strong>Year:</strong> {selectedMovie.Year}</p>
+
+    <p><strong>Genre:</strong> {selectedMovie.Genre}</p>
+
+    <p><strong>IMDb:</strong> {selectedMovie.imdbRating}</p>
+
+    <p>{selectedMovie.Plot}</p>
+
+    <button onClick={() => setSelectedMovie(null)}>
+      Close
+    </button>
+  </div>
+)}  
+  </div>
+  
+)}
+{selectedMovie && (
+  <div className="movie-details">
+    <h2>{selectedMovie.Title}</h2>
+
+    <img
+      src={selectedMovie.Poster}
+      alt={selectedMovie.Title}
+    />
+
+    <p>
+      <b>Year:</b> {selectedMovie.Year}
+    </p>
+
+    <p>
+      <b>Rating:</b> {selectedMovie.imdbRating}
+    </p>
+
+    <p>{selectedMovie.Plot}</p>
+
+    <button onClick={() => setSelectedMovie(null)}>
+      Close
+    </button>
   </div>
 )}
     </div>
